@@ -74,6 +74,8 @@ void    *routine(void *arg)
         eating(philo);
         if (!sleeping(philo))
             break;
+        if (philo->data->philo_nb % 2 != 0)
+            usleep(100);
     }
     return (NULL);
 }
