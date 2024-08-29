@@ -2,13 +2,7 @@
 
 void    print_msg(char *msg, t_philo *philo)
 {
-    pthread_mutex_lock(&philo->data->mutex_is_dead);
-    if (philo->data->is_die)
-    {
-        pthread_mutex_unlock(&philo->data->mutex_is_dead);
-        return ;
-    }
-    pthread_mutex_unlock(&philo->data->mutex_is_dead);
+   
     // pthread_mutex_lock(&philo->data->mutex_full);
     // if (philo->data->is_full)
     // {
@@ -17,6 +11,14 @@ void    print_msg(char *msg, t_philo *philo)
     // }
     // pthread_mutex_unlock(&philo->data->mutex_full);
     pthread_mutex_lock(&philo->data->mutex_write);
+    pthread_mutex_lock(&philo->data->mutex_is_dead);
+    if (philo->data->is_die)
+    {
+        pthread_mutex_unlock(&philo->data->mutex_is_dead);
+        pthread_mutex_unlock(&philo->data->mutex_write);
+        return ;
+    }
+    pthread_mutex_unlock(&philo->data->mutex_is_dead);
     printf("%ld %d %s", get_time() - philo->data->start, philo->id, msg);
     pthread_mutex_unlock(&philo->data->mutex_write);
 

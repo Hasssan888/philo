@@ -48,7 +48,7 @@ long    get_time();
 int	    ft_usleep(t_data *data, long milliseconds);
 
 // monitor
-void    *monitor_2(t_data *data, int i, unsigned int tim_last_meal);
+int finished_meals(t_data *data);
 void    *monitor(void *args);
 
 // init_data

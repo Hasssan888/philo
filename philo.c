@@ -1,4 +1,23 @@
 # include "philo.h"
+
+void ft_free(t_data *data)
+{
+    int i;
+
+    i = -1;
+    while (++i < data->philo_nb)
+        pthread_mutex_destroy(&data->forks[i]);
+    pthread_mutex_destroy(&data->last_meal_eat);
+    pthread_mutex_destroy(&data->mutex_flag_eat);
+    pthread_mutex_destroy(&data->mutex_full);
+    pthread_mutex_destroy(&data->mutex_is_dead);
+    pthread_mutex_destroy(&data->mutex_write);
+    free(data->philo);
+    free(data->philosophers);
+    free(data->forks);
+
+}
+
 int check_args(int ac, char **av)
 {
     int i;
@@ -10,17 +29,24 @@ int check_args(int ac, char **av)
         return (1);
     }
     i = 1;
-    while (av[i])
+    while (i < ac)
     {
         j = 0;
-        while(av[i][j])
-        {
-            if (!(av[i][j] >= '0' && av[i][j] <= '9'))
+        if (av[i][j] == '+' && av[i][j])
+            j++;
+        while (av[i][j])
+        { 
+            if (!ft_isdigit(av[i][j]))
             {
-                write(2, "error: you must be \n", 16);
-                return (1);
+                write(2, "invalid input\n", 15);
+                return(1);
             }
             j++;
+        }
+        if(ft_atoi(av[i]) <= 0)
+        {
+            write(2, "invalid input\n", 15);
+            return(1);
         }
         i++;
     }
@@ -80,5 +106,6 @@ int main(int ac, char **av)
         return (1);
     if (start_simuation(&data))
         return (1);
+    ft_free(&data);
     return (0);
 }
