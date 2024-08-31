@@ -12,21 +12,6 @@
 
 #include "philo.h"
 
-void	print_msg(char *msg, t_philo *philo)
-{
-	pthread_mutex_lock(&philo->data->mutex_write);
-	pthread_mutex_lock(&philo->data->mutex_is_dead);
-	if (philo->data->is_die)
-	{
-		pthread_mutex_unlock(&philo->data->mutex_is_dead);
-		pthread_mutex_unlock(&philo->data->mutex_write);
-		return ;
-	}
-	pthread_mutex_unlock(&philo->data->mutex_is_dead);
-	printf("%ld %d %s", get_time() - philo->data->start, philo->id, msg);
-	pthread_mutex_unlock(&philo->data->mutex_write);
-}
-
 void	eating(t_philo *philo)
 {
 	if (is_died(philo))
@@ -66,7 +51,7 @@ int	sleeping(t_philo *philo)
 	return (1);
 }
 
-int one_philo(t_philo *philo)
+int	one_philo(t_philo *philo)
 {
 	if (philo->data->philo_nb == 1)
 	{
@@ -74,6 +59,18 @@ int one_philo(t_philo *philo)
 		ft_usleep(philo->data, philo->data->time_to_die);
 		return (1);
 	}
+	return (0);
+}
+
+int	chab3o(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->data->mutex_flag_eat);
+	if (philo->meals_eat == philo->data->meals_nb)
+	{
+		pthread_mutex_unlock(&philo->data->mutex_flag_eat);
+		return (1);
+	}
+	pthread_mutex_unlock(&philo->data->mutex_flag_eat);
 	return (0);
 }
 
@@ -87,17 +84,12 @@ void	*routine(void *arg)
 		print_msg("is thinking\n", philo);
 		usleep(200);
 	}
-	if(one_philo(philo))
+	if (one_philo(philo))
 		return (NULL);
 	while (1)
 	{
-		pthread_mutex_lock(&philo->data->mutex_flag_eat);
-		if (philo->meals_eat == philo->data->meals_nb)
-		{
-			pthread_mutex_unlock(&philo->data->mutex_flag_eat);
+		if (chab3o(philo))
 			break;
-		}
-		pthread_mutex_unlock(&philo->data->mutex_flag_eat);
 		eating(philo);
 		if (!sleeping(philo))
 			break ;

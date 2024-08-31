@@ -27,7 +27,6 @@ int	init_mutex(t_data *data)
 		write(2, "error: init forks\n", 19);
 		return (2);
 	}
-		;
 	i = -1;
 	while (++i < data->philo_nb)
 		pthread_mutex_init(&data->forks[i], NULL);
